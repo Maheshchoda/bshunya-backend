@@ -7,6 +7,9 @@ const formatSlug: FieldHook = async ({ value, data }) => {
 export const Articles: CollectionConfig = {
   slug: "articles",
   auth: false,
+  admin: {
+    useAsTitle: "title",
+  },
   fields: [
     {
       name: "title",
@@ -78,15 +81,22 @@ export const Articles: CollectionConfig = {
     {
       name: "isHeroArticle",
       type: "checkbox",
+      defaultValue: false,
     },
     {
       name: "heroPosition",
       type: "number",
+      admin: {
+        condition: (data) => data.isHeroArticle,
+      },
     },
     {
       name: "viewsCount",
       type: "number",
       defaultValue: 0,
+      admin: {
+        condition: () => false,
+      },
     },
     {
       name: "meta",
