@@ -13,10 +13,8 @@ export const Articles: CollectionConfig = {
       type: "text",
       required: true,
     },
-
     {
       name: "slug",
-      label: "Slug",
       type: "text",
       unique: true,
       localized: false,
@@ -33,17 +31,18 @@ export const Articles: CollectionConfig = {
       type: "relationship",
       relationTo: "authors",
       required: true,
-    },
-    {
-      name: "content",
-      type: "richText",
-      required: true,
+      admin: {
+        position: "sidebar",
+      },
     },
     {
       name: "categories",
       type: "relationship",
       relationTo: "categories",
       hasMany: true,
+      admin: {
+        position: "sidebar",
+      },
     },
     {
       name: "tags",
@@ -54,6 +53,9 @@ export const Articles: CollectionConfig = {
           type: "text",
         },
       ],
+      admin: {
+        position: "sidebar",
+      },
     },
     {
       name: "image",
@@ -61,12 +63,9 @@ export const Articles: CollectionConfig = {
       relationTo: "media",
     },
     {
-      name: "publishedOn",
-      type: "date",
-    },
-    {
-      name: "lastUpdated",
-      type: "date",
+      name: "content",
+      type: "richText",
+      required: true,
     },
     {
       name: "isTrending",
@@ -87,10 +86,7 @@ export const Articles: CollectionConfig = {
     {
       name: "viewsCount",
       type: "number",
-    },
-    {
-      name: "_status",
-      type: "text",
+      defaultValue: 0,
     },
     {
       name: "meta",
@@ -100,6 +96,9 @@ export const Articles: CollectionConfig = {
         { name: "description", type: "text", required: true },
         { name: "image", type: "upload", relationTo: "media", required: true },
       ],
+      admin: {
+        position: "sidebar",
+      },
     },
   ],
   timestamps: true,
