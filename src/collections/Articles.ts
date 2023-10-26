@@ -1,4 +1,5 @@
 import { CollectionConfig, FieldHook } from "payload/types";
+import extractNecessaryProperties from "../handlingFields";
 
 const formatSlug: FieldHook = async ({ value, data }) => {
   return data?.title?.replace(/ /g, "-").toLowerCase() ?? value;
@@ -64,11 +65,20 @@ export const Articles: CollectionConfig = {
       name: "image",
       type: "upload",
       relationTo: "media",
+      required: true,
     },
     {
       name: "content",
       type: "richText",
       required: true,
+      hooks: {
+        beforeValidate: [
+          (form) =>
+            (form.data["content"] = extractNecessaryProperties(
+              form.data.content
+            )),
+        ],
+      },
     },
     {
       name: "isTrending",
