@@ -1,5 +1,5 @@
 import { CollectionConfig, FieldHook } from "payload/types";
-import extractNecessaryProperties from "../handlingFields";
+import RichTextField from "../fieldFilter/RichTextField";
 
 const formatSlug: FieldHook = async ({ value, data }) => {
   return data?.title?.replace(/ /g, "-").toLowerCase() ?? value;
@@ -10,6 +10,14 @@ export const Articles: CollectionConfig = {
   auth: false,
   admin: {
     useAsTitle: "title",
+  },
+  hooks: {
+    beforeValidate: [
+      (form) => {
+        form.data?.content &&
+          (form.data["content"] = RichTextField(form.data.content));
+      },
+    ],
   },
   fields: [
     {
@@ -71,14 +79,6 @@ export const Articles: CollectionConfig = {
       name: "content",
       type: "richText",
       required: true,
-      hooks: {
-        beforeValidate: [
-          (form) =>
-            (form.data["content"] = extractNecessaryProperties(
-              form.data.content
-            )),
-        ],
-      },
     },
     {
       name: "isTrending",
