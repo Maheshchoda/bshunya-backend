@@ -2,10 +2,10 @@ import { CollectionBeforeValidateHook } from "payload/types";
 import handleRichText from "./handleRichText";
 
 const handleArticle: CollectionBeforeValidateHook = async ({
-  data, // incoming data to update or create with
-  req, // full express request
-  operation, // name of the operation ie. 'create', 'update'
-  originalDoc, // original document
+  data,
+  req,
+  operation,
+  originalDoc,
 }) => {
   if (operation === "create" || operation === "update") {
     data?.content && (data["content"] = handleRichText(data.content));
