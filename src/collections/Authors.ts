@@ -1,5 +1,5 @@
 import { CollectionConfig } from "payload/types";
-import RichTextField from "../fieldFilter/RichTextField";
+import handleAuthor from "../lib/handleAuthor";
 
 export const Authors: CollectionConfig = {
   slug: "authors",
@@ -8,11 +8,7 @@ export const Authors: CollectionConfig = {
     useAsTitle: "name",
   },
   hooks: {
-    beforeValidate: [
-      (form) => {
-        form.data?.bio && (form.data["bio"] = RichTextField(form.data.bio));
-      },
-    ],
+    beforeValidate: [handleAuthor],
   },
   fields: [
     {
