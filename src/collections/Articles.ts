@@ -1,5 +1,5 @@
 import { CollectionConfig, FieldHook } from "payload/types";
-import RichTextField from "../fieldFilter/RichTextField";
+import handleArticle from "../lib/handleArticle";
 
 const formatSlug: FieldHook = async ({ value, data }) => {
   return data?.title?.replace(/ /g, "-").toLowerCase() ?? value;
@@ -12,12 +12,7 @@ export const Articles: CollectionConfig = {
     useAsTitle: "title",
   },
   hooks: {
-    beforeValidate: [
-      (form) => {
-        form.data?.content &&
-          (form.data["content"] = RichTextField(form.data.content));
-      },
-    ],
+    beforeValidate: [handleArticle],
   },
   fields: [
     {
