@@ -1,9 +1,9 @@
 import postImage from "./api/postImage";
 
-const handleImage = async (data, operation) => {
+const handleImage = async (imageId, operation) => {
   try {
     const params = {
-      imageId: data.image,
+      imageId: imageId,
       operation: operation,
     };
     if (operation === "create" || operation === "update") {
