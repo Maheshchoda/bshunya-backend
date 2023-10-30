@@ -3,13 +3,10 @@ import handleRichText from "./handleRichText";
 import handleImage from "../cloudImage/handleImage";
 
 // Function to handle child images
-async function handleChildImages(children, operation) {
+async function handleChildImages(children) {
   for (const child of children) {
     if (child.type === "upload" && child.value && child.value.id) {
-      const { url: childUrl, expiration } = await handleImage(
-        child.value.id,
-        operation
-      );
+      const { url: childUrl, expiration } = await handleImage(child.value.id);
       child.value["cloud"] = {};
       child.value.cloud["url"] = childUrl;
       child.value.cloud["expiration"] = expiration;
@@ -25,26 +22,20 @@ const handleArticle: CollectionBeforeValidateHook = async ({
 }) => {
   if (operation === "create" || operation === "update") {
     data?.content && (data["content"] = handleRichText(data.content));
-    const { url: rootUrl, expiration } = await handleImage(
-      data.image,
-      operation
-    );
+    const { url: rootUrl, expiration } = await handleImage(data.image);
 
     data.cloud.url = rootUrl;
     data.cloud.expiration = expiration;
 
     if (data.meta.cloud) {
-      const { url: metaUrl, expiration } = await handleImage(
-        data.meta.image,
-        operation
-      );
+      const { url: metaUrl, expiration } = await handleImage(data.meta.image);
       data.meta.cloud.url = metaUrl;
       data.meta.cloud.expiration = expiration;
     }
 
     // Handling images within content children
     if (data?.content?.root?.children) {
-      await handleChildImages(data.content.root.children, operation);
+      await handleChildImages(data.content.root.children);
     }
   }
   return data; // Return data to either create or update a document with

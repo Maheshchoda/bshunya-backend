@@ -1,10 +1,9 @@
 import postImage from "./api/postImage";
 
-const handleImage = async (imageId, operation) => {
+const handleImage = async (imageId) => {
   try {
     const params = {
       imageId: imageId,
-      operation: operation,
     };
     return await postImage("http://localhost:8080/api/image", params);
   } catch (error) {
