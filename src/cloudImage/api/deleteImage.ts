@@ -23,7 +23,6 @@ async function deleteChildImages(children) {
     if (child.type === "upload" && child.value && child.value.id) {
       const params = {
         imageId: child.value.id, // Fixed: use child.value.id instead of doc.image.id
-        operation: "delete",
       };
       await deleteImage("http://localhost:8080/api/image", params);
     }
@@ -32,11 +31,16 @@ async function deleteChildImages(children) {
 
 export default async function handleDelete({ doc }) {
   try {
-    const params = {
+    const paramsRoot = {
       imageId: doc.image.id,
-      operation: "delete",
     };
-    await deleteImage("http://localhost:8080/api/image", params);
+    await deleteImage("http://localhost:8080/api/image", paramsRoot);
+
+    const paramsMeta = {
+      imageId: doc.meta.image.id,
+    };
+
+    await deleteImage("http://localhost:8080/api/image", paramsMeta);
 
     // Call deleteChildImages if there are children to delete
     if (doc?.content?.root?.children) {

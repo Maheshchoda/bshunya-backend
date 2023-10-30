@@ -13,7 +13,7 @@ export const Articles: CollectionConfig = {
     useAsTitle: "title",
   },
   hooks: {
-    beforeChange: [handleArticle],
+    beforeValidate: [handleArticle],
     afterDelete: [handleDelete],
   },
   fields: [
@@ -73,6 +73,21 @@ export const Articles: CollectionConfig = {
       required: true,
     },
     {
+      name: "cloud",
+      type: "group",
+      hidden: true,
+      fields: [
+        {
+          name: "url",
+          type: "text",
+        },
+        {
+          name: "expiration",
+          type: "text",
+        },
+      ],
+    },
+    {
       name: "content",
       type: "richText",
       required: true,
@@ -112,6 +127,21 @@ export const Articles: CollectionConfig = {
         { name: "title", type: "text", required: true },
         { name: "description", type: "text", required: true },
         { name: "image", type: "upload", relationTo: "media", required: true },
+        {
+          name: "cloud",
+          type: "group",
+          hidden: true,
+          fields: [
+            {
+              name: "url",
+              type: "text",
+            },
+            {
+              name: "expiration",
+              type: "text",
+            },
+          ],
+        },
       ],
       admin: {
         position: "sidebar",
