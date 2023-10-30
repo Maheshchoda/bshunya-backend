@@ -2,43 +2,82 @@ import { CollectionBeforeValidateHook } from "payload/types";
 import handleRichText from "./handleRichText";
 import handleImage from "../cloudImage/handleImage";
 
-// Function to handle child images
-async function handleChildImages(children) {
-  for (const child of children) {
-    if (child.type === "upload" && child.value && child.value.id) {
-      const { url: childUrl, expiration } = await handleImage(child.value.id);
-      child.value["cloud"] = {};
-      child.value.cloud["url"] = childUrl;
-      child.value.cloud["expiration"] = expiration;
-    }
+async function handleImageForData(data) {
+  if (data.image) {
+    const { url: imageUrl, expiration } = await handleImage(data.image);
+    data["cloud"] = {
+      url: imageUrl,
+      expiration: expiration,
+    };
+  }
+}
+
+async function handleImageForMeta(data) {
+  if (data.meta && data.meta.image) {
+    const { url: metaImageUrl, expiration } = await handleImage(
+      data.meta.image
+    );
+    data.meta["cloud"] = {
+      url: metaImageUrl,
+      expiration: expiration,
+    };
+  }
+}
+
+async function handleImagesForContentChildren(data, originalChildren = null) {
+  if (data.content && data.content.root && data.content.root.children) {
+    const children = data.content.root.children;
+    await Promise.all(
+      children.map(async (child, index) => {
+        if (child.type === "upload" && child.value?.id) {
+          if (
+            !originalChildren ||
+            !originalChildren[index] ||
+            child.value.id !== originalChildren[index]?.value?.id
+          ) {
+            const { url: childUrl, expiration } = await handleImage(
+              child.value.id
+            );
+            child.value["cloud"] = {
+              url: childUrl,
+              expiration: expiration,
+            };
+          }
+        }
+      })
+    );
   }
 }
 
 const handleArticle: CollectionBeforeValidateHook = async ({
-  data, // incoming data to update or create with
-  req, // full express request
-  operation, // name of the operation ie. 'create', 'update'
-  originalDoc, // original document
+  data,
+  req,
+  operation,
+  originalDoc,
 }) => {
-  if (operation === "create" || operation === "update") {
-    data?.content && (data["content"] = handleRichText(data.content));
-    const { url: rootUrl, expiration } = await handleImage(data.image);
+  data.content = handleRichText(data.content);
 
-    data.cloud.url = rootUrl;
-    data.cloud.expiration = expiration;
-
-    if (data.meta.cloud) {
-      const { url: metaUrl, expiration } = await handleImage(data.meta.image);
-      data.meta.cloud.url = metaUrl;
-      data.meta.cloud.expiration = expiration;
+  if (operation === "create") {
+    await Promise.all([handleImageForData(data), handleImageForMeta(data)]);
+    await handleImagesForContentChildren(data);
+  } else if (operation === "update") {
+    if (data.image !== originalDoc.image) {
+      await handleImageForData(data);
     }
 
-    // Handling images within content children
-    if (data?.content?.root?.children) {
-      await handleChildImages(data.content.root.children);
+    if (data.meta && data.meta.image !== originalDoc.meta.image) {
+      await handleImageForMeta(data);
+    }
+
+    if (data?.content?.root?.children && originalDoc?.content?.root?.children) {
+      await handleImagesForContentChildren(
+        data,
+        originalDoc.content.root.children
+      );
     }
   }
-  return data; // Return data to either create or update a document with
+
+  return data;
 };
 
 export default handleArticle;
