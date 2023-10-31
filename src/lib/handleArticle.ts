@@ -1,55 +1,58 @@
 import { CollectionBeforeValidateHook } from "payload/types";
 import handleRichText from "./handleRichText";
 import handleImage from "../cloudImage/handleImage";
+import { deleteFromCloud } from "../cloudImage/api/deleteImage";
 
-async function handleImageForData(data) {
-  if (data.image) {
-    const { url: imageUrl, expiration } = await handleImage(data.image);
-    data["cloud"] = {
-      url: imageUrl,
-      expiration: expiration,
-    };
+async function handleImageForData(data, originalData = null) {
+  if (data.image && (!originalData || data.image !== originalData.image)) {
+    await handleImage(data.image);
+    if (originalData) {
+      await deleteFromCloud(originalData.image);
+    }
   }
 }
 
-async function handleImageForMeta(data) {
-  if (data.meta && data.meta.image) {
-    const { url: metaImageUrl, expiration } = await handleImage(
-      data.meta.image
-    );
-    data.meta["cloud"] = {
-      url: metaImageUrl,
-      expiration: expiration,
-    };
+async function handleImageForMeta(data, originalMeta = null) {
+  if (
+    data.meta?.image &&
+    (!originalMeta || data.meta.image !== originalMeta.meta?.image)
+  ) {
+    await handleImage(data.meta.image);
+    if (originalMeta) {
+      await deleteFromCloud(originalMeta.meta.image);
+    }
   }
 }
 
 async function handleImagesForContentChildren(data, originalChildren = null) {
-  if (data.content && data.content.root && data.content.root.children) {
-    const children = data.content.root.children;
-    await Promise.all(
-      children.map(async (child, index) => {
-        if (child.type === "upload" && child.value?.id) {
-          if (
-            !originalChildren ||
-            !originalChildren[index] ||
-            child.value.id !== originalChildren[index]?.value?.id
-          ) {
-            const { url: childUrl, expiration } = await handleImage(
-              child.value.id
-            );
-            child.value["cloud"] = {
-              url: childUrl,
-              expiration: expiration,
-            };
-          }
+  const children = data.content.root.children;
+
+  await Promise.all(
+    children.map(async (child) => {
+      if (child.type === "upload" && child.value?.id) {
+        const existingChild = originalChildren?.find(
+          (originalChild) => originalChild.value?.id === child.value?.id
+        );
+
+        if (!existingChild) {
+          await handleImage(child.value.id);
         }
-      })
-    );
+      }
+    })
+  );
+
+  if (originalChildren) {
+    originalChildren.forEach(async (originalChild) => {
+      if (
+        !children.find((child) => child.value?.id === originalChild.value?.id)
+      ) {
+        await deleteFromCloud(originalChild.value.id);
+      }
+    });
   }
 }
 
-const handleArticle: CollectionBeforeValidateHook = async ({
+const testHandleArticle: CollectionBeforeValidateHook = async ({
   data,
   req,
   operation,
@@ -58,26 +61,23 @@ const handleArticle: CollectionBeforeValidateHook = async ({
   data.content = handleRichText(data.content);
 
   if (operation === "create") {
-    await Promise.all([handleImageForData(data), handleImageForMeta(data)]);
-    await handleImagesForContentChildren(data);
+    await Promise.all([
+      handleImageForData(data),
+      handleImageForMeta(data),
+      handleImagesForContentChildren(data),
+    ]);
   } else if (operation === "update") {
-    if (data.image !== originalDoc.image) {
-      await handleImageForData(data);
-    }
-
-    if (data.meta && data.meta.image !== originalDoc.meta.image) {
-      await handleImageForMeta(data);
-    }
-
-    if (data?.content?.root?.children && originalDoc?.content?.root?.children) {
-      await handleImagesForContentChildren(
+    await Promise.all([
+      handleImageForData(data, originalDoc),
+      handleImageForMeta(data, originalDoc),
+      handleImagesForContentChildren(
         data,
-        originalDoc.content.root.children
-      );
-    }
+        originalDoc?.content?.root?.children
+      ),
+    ]);
   }
 
   return data;
 };
 
-export default handleArticle;
+export default testHandleArticle;

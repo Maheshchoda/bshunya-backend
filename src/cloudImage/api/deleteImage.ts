@@ -17,6 +17,15 @@ async function deleteImage(url, params) {
   }
 }
 
+export async function deleteFromCloud(imageId) {
+  try {
+    const params = { imageId: imageId };
+    await deleteImage("http://localhost:8080/api/image", params);
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
 // Function to delete child images
 async function deleteChildImages(children) {
   for (const child of children) {
