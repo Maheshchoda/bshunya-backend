@@ -1,14 +1,14 @@
-import postImage from "./api/postImage";
+import PostImage from "./api/PostImage";
 
-const handleImage = async (imageId) => {
+const HandleImage = async (imageId) => {
   try {
     const params = {
       imageId: imageId,
     };
-    return await postImage("http://localhost:8080/api/image", params);
+    return await PostImage("http://localhost:8080/api/image", params);
   } catch (error) {
     console.error("Error:", error);
   }
 };
 
-export default handleImage;
+export default HandleImage;

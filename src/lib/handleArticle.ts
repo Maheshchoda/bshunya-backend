@@ -1,11 +1,15 @@
 import { CollectionBeforeValidateHook } from "payload/types";
-import handleRichText from "./handleRichText";
-import handleImage from "../cloudImage/handleImage";
-import { deleteFromCloud } from "../cloudImage/api/deleteImage";
+import HandleRichText from "./HandleRichText";
+import HandleImage from "../cloudImage/HandleImage";
+import { deleteFromCloud } from "../cloudImage/api/DeleteImage";
 
 async function handleImageForData(data, originalData = null) {
   if (data.image && (!originalData || data.image !== originalData.image)) {
-    await handleImage(data.image);
+    const { url: imageUrl, expiration } = await HandleImage(data.image);
+    data["cloud"] = {
+      url: imageUrl,
+      expiration: expiration,
+    };
     if (originalData) {
       await deleteFromCloud(originalData.image);
     }
@@ -17,7 +21,14 @@ async function handleImageForMeta(data, originalMeta = null) {
     data.meta?.image &&
     (!originalMeta || data.meta.image !== originalMeta.meta?.image)
   ) {
-    await handleImage(data.meta.image);
+    const { url: metaImageUrl, expiration } = await HandleImage(
+      data.meta.image
+    );
+    data.meta["cloud"] = {
+      url: metaImageUrl,
+      expiration: expiration,
+    };
+
     if (originalMeta) {
       await deleteFromCloud(originalMeta.meta.image);
     }
@@ -33,9 +44,14 @@ async function handleImagesForContentChildren(data, originalChildren = null) {
         const existingChild = originalChildren?.find(
           (originalChild) => originalChild.value?.id === child.value?.id
         );
-
         if (!existingChild) {
-          await handleImage(child.value.id);
+          const { url: childUrl, expiration } = await HandleImage(
+            child.value.id
+          );
+          child.value["cloud"] = {
+            url: childUrl,
+            expiration: expiration,
+          };
         }
       }
     })
@@ -52,13 +68,13 @@ async function handleImagesForContentChildren(data, originalChildren = null) {
   }
 }
 
-const testHandleArticle: CollectionBeforeValidateHook = async ({
+const HandleArticle: CollectionBeforeValidateHook = async ({
   data,
   req,
   operation,
   originalDoc,
 }) => {
-  data.content = handleRichText(data.content);
+  data.content = HandleRichText(data.content);
 
   if (operation === "create") {
     await Promise.all([
@@ -80,4 +96,4 @@ const testHandleArticle: CollectionBeforeValidateHook = async ({
   return data;
 };
 
-export default testHandleArticle;
+export default HandleArticle;

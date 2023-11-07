@@ -38,7 +38,7 @@ async function deleteChildImages(children) {
   }
 }
 
-export default async function handleDelete({ doc }) {
+export default async function HandleDelete({ doc }) {
   try {
     const paramsRoot = {
       imageId: doc.image.id,

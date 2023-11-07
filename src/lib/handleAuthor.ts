@@ -1,5 +1,5 @@
 import { CollectionBeforeValidateHook } from "payload/types";
-import handleRichText from "./handleRichText";
+import handleRichText from "./HandleRichText";
 
 const handleAuthor: CollectionBeforeValidateHook = async ({
   data, // incoming data to update or create with

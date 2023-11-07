@@ -55,7 +55,7 @@ function mapContentElement(element: Element): Element | null {
 }
 
 // Function to process the article and filter out unwanted elements
-export default function handleRichText(obj: {
+export default function HandleRichText(obj: {
   root?: { children?: Element[] };
 }) {
   if (!obj.root || !obj.root.children) {

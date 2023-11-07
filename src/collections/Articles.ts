@@ -1,6 +1,6 @@
 import { CollectionConfig, FieldHook } from "payload/types";
-import handleArticle from "../lib/handleArticle";
-import handleDelete from "../cloudImage/api/deleteImage";
+import HandleDelete from "../cloudImage/api/DeleteImage";
+import HandleArticle from "../lib/HandleArticle";
 
 const formatSlug: FieldHook = async ({ value, data }) => {
   return data?.title?.replace(/ /g, "-").toLowerCase() ?? value;
@@ -13,8 +13,8 @@ export const Articles: CollectionConfig = {
     useAsTitle: "title",
   },
   hooks: {
-    beforeValidate: [handleArticle],
-    afterDelete: [handleDelete],
+    beforeValidate: [HandleArticle],
+    afterDelete: [HandleDelete],
   },
   fields: [
     {

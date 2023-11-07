@@ -1,4 +1,4 @@
-export default async function postImage(url, params) {
+export default async function PostImage(url, params) {
   try {
     const response = await fetch(url, {
       method: "POST",
