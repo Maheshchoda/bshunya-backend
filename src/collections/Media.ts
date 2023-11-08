@@ -1,7 +1,7 @@
+import type { CollectionConfig } from "payload/types";
 import { slateEditor } from "@payloadcms/richtext-slate";
 import path from "path";
-import type { CollectionConfig } from "payload/types";
-import testHandleImage from "./testHandleImage";
+import GetCloudURL from "../lib/GetCloudURL";
 
 export const Media: CollectionConfig = {
   slug: "media",
@@ -12,7 +12,7 @@ export const Media: CollectionConfig = {
     read: () => true,
   },
   hooks: {
-    afterChange: [testHandleImage],
+    afterChange: [GetCloudURL],
   },
   fields: [
     {

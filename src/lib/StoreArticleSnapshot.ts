@@ -1,22 +1,5 @@
 import { CollectionAfterChangeHook } from "payload/types";
-
-async function PostArticle(url, params) {
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(params),
-    });
-    if (!response.ok) {
-      throw new Error("Network response was not ok " + response.statusText);
-    }
-    return await response.json();
-  } catch (error) {
-    console.error("Error:", error);
-  }
-}
+import PostData from "./PostData";
 
 async function fetchAndStoreArticle(articleId) {
   try {
@@ -35,7 +18,7 @@ async function fetchAndStoreArticle(articleId) {
     const params = {
       article: article,
     };
-    await PostArticle("http://localhost:8080/api/article", params);
+    await PostData("http://localhost:8080/api/article", params);
   } catch (error) {
     console.error("Error fetching and storing complete article data:", error);
   }
