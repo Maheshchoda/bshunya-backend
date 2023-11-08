@@ -1,6 +1,7 @@
 import { CollectionConfig, FieldHook } from "payload/types";
-import HandleDelete from "../cloudImage/api/DeleteImage";
 import HandleArticle from "../lib/HandleArticle";
+import StoreArticleSnapshot from "../lib/StoreArticleSnapshot";
+import HandleDelete from "../cloudImage/api/DeleteImage";
 
 const formatSlug: FieldHook = async ({ value, data }) => {
   return data?.title?.replace(/ /g, "-").toLowerCase() ?? value;
@@ -13,7 +14,8 @@ export const Articles: CollectionConfig = {
     useAsTitle: "title",
   },
   hooks: {
-    beforeValidate: [HandleArticle],
+    beforeChange: [HandleArticle],
+    afterChange: [StoreArticleSnapshot],
     afterDelete: [HandleDelete],
   },
   fields: [
@@ -73,21 +75,6 @@ export const Articles: CollectionConfig = {
       required: true,
     },
     {
-      name: "cloud",
-      type: "group",
-      hidden: true,
-      fields: [
-        {
-          name: "url",
-          type: "text",
-        },
-        {
-          name: "expiration",
-          type: "text",
-        },
-      ],
-    },
-    {
       name: "content",
       type: "richText",
       required: true,
@@ -127,21 +114,6 @@ export const Articles: CollectionConfig = {
         { name: "title", type: "text", required: true },
         { name: "description", type: "text", required: true },
         { name: "image", type: "upload", relationTo: "media", required: true },
-        {
-          name: "cloud",
-          type: "group",
-          hidden: true,
-          fields: [
-            {
-              name: "url",
-              type: "text",
-            },
-            {
-              name: "expiration",
-              type: "text",
-            },
-          ],
-        },
       ],
       admin: {
         position: "sidebar",

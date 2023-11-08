@@ -17,6 +17,25 @@ async function deleteImage(url, params) {
   }
 }
 
+async function deleteArticle(url, params) {
+  try {
+    const response = await fetch(url, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(params),
+    });
+    if (!response.ok) {
+      throw new Error("Network response was not ok " + response.statusText);
+    }
+    return { status: "success", message: "Item deleted successfully" };
+  } catch (error) {
+    console.error("Error:", error);
+    return { status: "error", message: error.message };
+  }
+}
+
 export async function deleteFromCloud(imageId) {
   try {
     const params = { imageId: imageId };
@@ -55,6 +74,12 @@ export default async function HandleDelete({ doc }) {
     if (doc?.content?.root?.children) {
       await deleteChildImages(doc.content.root.children);
     }
+
+    //deleting the complete Article
+    const paramsArticle = {
+      articleId: doc.id,
+    };
+    await deleteArticle("http://localhost:8080/api/article", paramsArticle);
   } catch (error) {
     console.error("Error:", error);
   }

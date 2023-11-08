@@ -1,4 +1,4 @@
-import { CollectionBeforeValidateHook } from "payload/types";
+import { CollectionBeforeChangeHook } from "payload/types";
 import HandleRichText from "./HandleRichText";
 import HandleImage from "../cloudImage/HandleImage";
 import { deleteFromCloud } from "../cloudImage/api/DeleteImage";
@@ -68,30 +68,29 @@ async function handleImagesForContentChildren(data, originalChildren = null) {
   }
 }
 
-const HandleArticle: CollectionBeforeValidateHook = async ({
+const HandleArticle: CollectionBeforeChangeHook = async ({
   data,
   req,
   operation,
   originalDoc,
 }) => {
   data.content = HandleRichText(data.content);
-
-  if (operation === "create") {
-    await Promise.all([
-      handleImageForData(data),
-      handleImageForMeta(data),
-      handleImagesForContentChildren(data),
-    ]);
-  } else if (operation === "update") {
-    await Promise.all([
-      handleImageForData(data, originalDoc),
-      handleImageForMeta(data, originalDoc),
-      handleImagesForContentChildren(
-        data,
-        originalDoc?.content?.root?.children
-      ),
-    ]);
-  }
+  // if (operation === "create") {
+  //   await Promise.all([
+  //     handleImageForData(data),
+  //     handleImageForMeta(data),
+  //     handleImagesForContentChildren(data),
+  //   ]);
+  // } else if (operation === "update") {
+  //   await Promise.all([
+  //     handleImageForData(data, originalDoc),
+  //     handleImageForMeta(data, originalDoc),
+  //     handleImagesForContentChildren(
+  //       data,
+  //       originalDoc?.content?.root?.children
+  //     ),
+  //   ]);
+  // }
 
   return data;
 };
