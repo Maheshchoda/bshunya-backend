@@ -2,10 +2,7 @@ import { CollectionConfig, FieldHook } from "payload/types";
 import HandleArticle from "../lib/HandleArticle";
 import StoreArticleSnapshot from "../lib/StoreArticleSnapshot";
 import HandleDelete from "../cloudImage/api/DeleteImage";
-
-const formatSlug: FieldHook = async ({ value, data }) => {
-  return data?.title?.replace(/ /g, "-").toLowerCase() ?? value;
-};
+import { formatSlug, tagToLowerCase } from "../lib/fieldFormat";
 
 export const Articles: CollectionConfig = {
   slug: "articles",
@@ -58,6 +55,9 @@ export const Articles: CollectionConfig = {
     {
       name: "tags",
       type: "array",
+      hooks: {
+        beforeValidate: [tagToLowerCase],
+      },
       fields: [
         {
           name: "tag",

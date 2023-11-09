@@ -9,6 +9,9 @@ export const Categories: CollectionConfig = {
     {
       name: "name",
       type: "text",
+      hooks: {
+        beforeValidate: [(data) => data.value.toLowerCase()],
+      },
       required: true,
     },
     {
