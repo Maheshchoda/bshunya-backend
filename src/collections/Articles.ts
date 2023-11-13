@@ -22,7 +22,7 @@ export const Articles: CollectionConfig = {
       required: true,
     },
     {
-      name: "titleCaption",
+      name: "caption",
       type: "text",
       required: true,
     },
