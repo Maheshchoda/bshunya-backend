@@ -22,6 +22,11 @@ export const Articles: CollectionConfig = {
       required: true,
     },
     {
+      name: "titleCaption",
+      type: "text",
+      required: true,
+    },
+    {
       name: "slug",
       type: "text",
       unique: true,

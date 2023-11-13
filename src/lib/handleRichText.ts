@@ -5,6 +5,7 @@ interface Value {
 interface Element {
   type: string;
   text?: string;
+  format?: number;
   tag?: string;
   children?: Element[];
   listType?: string;
@@ -14,11 +15,11 @@ interface Element {
 
 // Helper function to map content elements recursively
 function mapContentElement(element: Element): Element | null {
-  const { type, text, tag, children, listType } = element;
+  const { type, text, tag, children, listType, format } = element;
 
   switch (type) {
     case "text":
-      return { type: "text", text: text || "" };
+      return { type: "text", format: format, text: text || "" };
     case "heading":
     case "listitem":
     case "quote":
