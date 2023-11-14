@@ -6,11 +6,7 @@ import { mongooseAdapter } from "@payloadcms/db-mongodb";
 import { viteBundler } from "@payloadcms/bundler-vite";
 import { lexicalEditor } from "@payloadcms/richtext-lexical";
 
-import Users from "./collections/Users";
-import { Articles } from "./collections/Articles";
-import { Authors } from "./collections/Authors";
-import { Categories } from "./collections/Categories";
-import { Media } from "./collections/Media";
+import { Users, Articles, Authors, Categories, Media } from "./collections";
 
 export default buildConfig({
   admin: {

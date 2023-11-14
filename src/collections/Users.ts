@@ -1,6 +1,6 @@
 import { CollectionConfig } from "payload/types";
 
-const Users: CollectionConfig = {
+export const Users: CollectionConfig = {
   slug: "users",
   auth: {
     useAPIKey: true,
@@ -13,5 +13,3 @@ const Users: CollectionConfig = {
     // Add more fields as needed
   ],
 };
-
-export default Users;
