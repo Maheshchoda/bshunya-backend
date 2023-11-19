@@ -1,4 +1,4 @@
-import { CollectionConfig, FieldHook } from "payload/types";
+import { CollectionConfig } from "payload/types";
 import HandleArticle from "../lib/HandleArticle";
 import StoreArticleSnapshot from "../lib/StoreArticleSnapshot";
 import HandleDelete from "../cloudImage/api/DeleteImage";
