@@ -9,7 +9,7 @@ const GetCloudURL: CollectionAfterChangeHook = async ({
   operation, // name of the operation ie. 'create', 'update'
 }) => {
   try {
-    if (operation === "create") {
+    if (operation === "create" || operation === "update") {
       const { url: imageUrl, expiration } = await HandleImage(doc.id);
       doc["cloud"] = {
         url: imageUrl,
