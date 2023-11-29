@@ -1,7 +1,7 @@
 import { FieldHook } from "payload/types";
 
 export const formatSlug: FieldHook = async ({ value, data }) => {
-  return data?.title?.replace(/ /g, "-").toLowerCase() ?? value;
+  return data?.slugText?.replace(/ /g, "-").toLowerCase() ?? value;
 };
 
 export const tagToLowerCase: FieldHook = async ({ value }) => {
