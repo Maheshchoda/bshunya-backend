@@ -24,8 +24,8 @@ function processLinkElement(linkElement: Element): Element {
   const linkText = linkElement.children?.map((c) => c.text).join("") || "";
   return {
     type: "link",
-    children: linkElement.children,
     text: linkText,
+    children: linkElement.children,
     fields: linkElement.fields,
   };
 }
