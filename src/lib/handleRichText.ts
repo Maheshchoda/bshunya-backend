@@ -2,6 +2,12 @@ interface Value {
   id: string;
 }
 
+interface LinkFields {
+  url: string;
+  newTab: boolean;
+  linkType: string;
+}
+
 interface Element {
   type: string;
   text?: string;
@@ -11,6 +17,17 @@ interface Element {
   listType?: string;
   value?: Value;
   relationTo?: string;
+  fields?: LinkFields;
+}
+
+function processLinkElement(linkElement: Element): Element {
+  const linkText = linkElement.children?.map((c) => c.text).join("") || "";
+  return {
+    type: "link",
+    children: linkElement.children,
+    text: linkText,
+    fields: linkElement.fields,
+  };
 }
 
 // Helper function to map content elements recursively
@@ -23,18 +40,28 @@ function mapContentElement(element: Element): Element | null {
     case "heading":
     case "listitem":
     case "quote":
+      const processedChildrenForSpecialTypes = children
+        ?.map((child) =>
+          child.type === "link"
+            ? processLinkElement(child)
+            : mapContentElement(child)
+        )
+        .filter((e) => e);
       return {
         type,
         tag: type === "heading" ? tag : undefined,
-        children: children?.map(mapContentElement).filter((e) => e) || [],
+        children: processedChildrenForSpecialTypes || [],
       };
     case "paragraph":
-      const filteredChildren = children
-        ?.filter((c) => c.text?.trim())
-        .map(mapContentElement)
-        .filter((e) => e);
-      return filteredChildren?.length
-        ? { type: "paragraph", children: filteredChildren }
+      const processedChildrenForParagraph = children
+        ?.map((child) =>
+          child.type === "link"
+            ? processLinkElement(child)
+            : mapContentElement(child)
+        )
+        .filter((e) => e && e.text?.trim());
+      return processedChildrenForParagraph?.length
+        ? { type: "paragraph", children: processedChildrenForParagraph }
         : null;
     case "list":
       return {
